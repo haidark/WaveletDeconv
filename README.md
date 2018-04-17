@@ -1,13 +1,12 @@
 # WaveletDeconv
-Neural network layer code written using Keras to implement wavelet deconvolutions
+Neural network layer code written using Keras to implement wavelet deconvolutions.
 
-'''
-    Deconvolutions of 1D signals using wavelets of different sizes
-    When using this layer as the first layer in a model,
-    either provide the keyword argument `input_dim`
-    (int, e.g. 128 for sequences of 128-dimensional vectors),
-    or `input_shape` (tuple of integers, e.g. (10, 128) for sequences
-    of 10 vectors of 128-dimensional vectors).
+Deconvolutions of 1D signals using wavelets of different sizes
+When using this layer as the first layer in a model,
+either provide the keyword argument `input_dim`
+(int, e.g. 128 for sequences of 128-dimensional vectors),
+or `input_shape` (tuple of integers, e.g. (10, 128) for sequences
+of 10 vectors of 128-dimensional vectors).
     
     # Example
     ```python
