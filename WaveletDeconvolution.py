@@ -71,7 +71,6 @@ class WaveletDeconvolution(Layer):
     # Output shape
         4D tensor with shape: `(batch_samples, input_dim, new_steps, nb_widths)`.
         `steps` value might have changed due to padding.
-    
     '''
     
     def __init__(self, nb_widths, filter_length=100,
@@ -158,40 +157,7 @@ class WaveletDeconvolution(Layer):
         kernel = K.expand_dims(kernel, 0)
         kernel = kernel.transpose((0, 2, 3, 1))
                
-        # kernel = None     
-        # for i in range(self.nb_widths):
-        #     w = self.W[i]
-        #     w2 = w**2
-        #     B = (3 * w)**0.5
-        #     A = (2 / (B * (np.pi**0.25)))
-        #     mod = (1 - (X2)/(w2))
-        #     gauss = K.exp(-(X2) / (2 * (w2)))
-        #     kern = A * mod * gauss
-        #     kern = K.reshape(kern, (filter_length, 1))
-        #     wav_kernel = K.transpose(kern)              # shape is now (1, filter_length)
-        #     wav_kernel = K.expand_dims(wav_kernel, 0)   # shape is now (1, 1, filter_length)
-        #     wav_kernel = K.expand_dims(wav_kernel, 1)   # shape is now (1, 1, 1, filter_length)
-        #     if kernel is None:
-        #         kernel = wav_kernel
-        #     else:
-        #         kernel = K.concatenate([kernel, wav_kernel], axis=0)
-        # kernel = kernel.transpose((1, 3, 2, 0)) # TF style shape = (1, filter_length, 1, nb_widths)
 
-        
-        
-        # # compute the convolution
-        # output = None
-        # for i in range(self.input_dim):
-        #     x_slice = x[:,i,:,:]
-        #     x_slice = K.expand_dims(x_slice,1) # shape (num_batches, 1, 1, input_length)
-        #     output_slice = K.conv2d(x_slice, kernel, strides=self.subsample, padding=self.padding, data_format='channels_first')
-        #     if output is None:
-        #         output = output_slice
-        #     else:
-        #         output = K.concatenate([output, output_slice], axis=2)
-        # output = output.transpose((0, 2, 3, 1)) # shape (num_batches, input_dim, input_length, nb_widths)
-        # output = self.activation(output)
-        
         # reshape input so number of dimensions is first
         x = x.transpose((1, 0, 2))
         def gen_conv(x_slice):
@@ -201,24 +167,7 @@ class WaveletDeconvolution(Layer):
         output, _ = theano.scan(fn=gen_conv, sequences=[x])
         output = K.squeeze(output, 3)
         output = output.transpose((1, 0, 3, 2))
-                 
-        # ### tester code to visualize outputs
-        # tester = np.random.random((1, 2, 100)).astype('float32')
-        # z = output.eval({x : tester})
-        # print z.shape
-#         for i in range(self.nb_widths):
-#             plt.figure(figsize=(10,4))
-               
-#             plt.subplot(121)
-#             plt.plot(np.squeeze(z[0,0,:,i]), 'k')
-#             plt.plot(np.squeeze(tester[:,0,:]), 'b')
-#             plt.title('Width=%f' % self.W[i].eval())
-#             plt.subplot(122)
-#             plt.plot(np.squeeze(z[0,1,:,i]), 'r')
-#             plt.plot(np.squeeze(tester[:,1,:]), 'g')
-#             plt.title('Width=%f' % self.W[i].eval())
-#             plt.show()
-            
+           
         return output
                 
     def compute_output_shape(self, input_shape):
@@ -249,11 +198,3 @@ class WaveletDeconvolution(Layer):
     def didactic(self, shape, name=None):
         x = 2**np.arange(shape).astype('float32')
         return K.variable(value=x, name=name)
-
-from keras.models import Sequential
-from keras.layers.core import Dense, Dropout, Activation, Flatten
-from keras.layers.convolutional import Convolution2D
- 
-modelWD = Sequential()
-modelWD.add(WaveletDeconvolution(4, filter_length=30, input_shape=(2, 100), padding='same'))
-

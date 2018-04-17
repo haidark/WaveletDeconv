@@ -66,18 +66,6 @@ for i in range(val_data.shape[0]):
     val_data[i,:,:] = sig
     val_labels[i] = label
     
-# plt.figure(figsize=(9,3))
-# plt.plot(X, np.squeeze(data[N/2,:,:]), 'k')
-# plt.axis([-100, 100, -5, 5])
-# plt.xlabel('time')
-# plt.savefig('/home/haidar/Dropbox/Research/WaveletDeconv Poster/pos.png')
-# 
-# plt.figure(figsize=(9,3))
-# plt.plot(X, np.squeeze(data[N/2+1,:,:]), 'r')
-# plt.axis([-100, 100, -5, 5])
-# plt.xlabel('time')
-# plt.savefig('/home/haidar/Dropbox/Research/WaveletDeconv Poster/neg.png')
-# plt.show()
 
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
@@ -119,8 +107,6 @@ for i in range(num_epochs):
 
 plt.figure(figsize=(6,6))
 for i in range(Widths.shape[1]):
-   plt.plot(range(num_epochs), Widths[:,i]) 
-
-
+    plt.plot(range(num_epochs), Widths[:,i]) 
 
 plt.show()
