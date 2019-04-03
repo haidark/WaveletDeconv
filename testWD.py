@@ -70,11 +70,12 @@ for i in range(val_data.shape[0]):
 from keras.models import Sequential
 from keras.layers.core import Dense, Dropout, Activation, Flatten
 from keras.layers.convolutional import Convolution2D
+from keras import backend as K
 from WaveletDeconvolution import WaveletDeconvolution
 
 inp_shape = data.shape[1:]
 modelWD = Sequential()
-modelWD.add(WaveletDeconvolution(5, filter_length=500, input_shape=inp_shape, padding='same'))
+modelWD.add(WaveletDeconvolution(5, kernel_length=500, input_shape=inp_shape, padding='same', data_format='channels_first'))
 modelWD.add(Activation('tanh'))
 modelWD.add(Convolution2D(5, (3, 3), padding='same'))
 modelWD.add(Activation('relu'))
@@ -87,21 +88,27 @@ modelWD.add(Activation('sigmoid'))
 modelWD.compile(optimizer='sgd', loss='binary_crossentropy')
 
 print('Testing saving...')
-modelWD.save('testWD_model.h5', overwrite=True)
+modelWD.save_weights('testWD_model.h5')
+with open('testWD_arch.json', 'w') as jfile:
+    jfile.write(modelWD.to_json())
 print("Success!")
 
 print('Testing loading...')
-from keras.models import load_model
-model = load_model('testWD_model.h5', custom_objects={'WaveletDeconvolution': WaveletDeconvolution})
+from keras.models import model_from_json
+with open('testWD_arch.json', 'r') as jfile:
+    model = model_from_json(jfile.read(), custom_objects={'WaveletDeconvolution': WaveletDeconvolution})
+model.load_weights('testWD_model.h5')
+# model = load_model('testWD_model.h5', custom_objects={'WaveletDeconvolution': WaveletDeconvolution})
 print("Success!")
-
+model.compile(optimizer='sgd', loss='binary_crossentropy')
 num_epochs = 20
 plt.figure(figsize=(6,6))
 Widths = np.zeros((num_epochs, 5)).astype('float32')
 for i in range(num_epochs):
     hWD = model.fit(data, labels, epochs=1, batch_size=2, validation_data=(val_data, val_labels), verbose=0)
     print('Epoch %3d | train_loss: %.4f | val_loss: %.4f' % (i+1, hWD.history['loss'][0], hWD.history['val_loss'][0]))
-    Widths[i,:] = model.layers[0].weights[0].eval()
+    with K.get_session().as_default():
+        Widths[i,:] = model.layers[0].weights[0].eval()
     plt.plot(i, hWD.history['loss'][0], 'k.')
     plt.plot(i, hWD.history['val_loss'][0], 'r.')
 
