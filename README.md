@@ -7,7 +7,7 @@ Requires Keras with a Tensorflow backend in addition to standard packages such a
 
 Run `testWD.py` to verify model saving, model loading, and proper functionality.
 
-Deconvolutions of 1D signals using wavelets of different scales/widths. For a full description of the wavelet deconolution method, see our [paper](http://papers.nips.cc/paper/7711-learning-filter-widths-of-spectral-decompositions-with-wavelets.pdf)
+Deconvolutions of 1D signals using wavelets of different scales/widths. For a full description of the wavelet deconvolution method, see our [paper](http://papers.nips.cc/paper/7711-learning-filter-widths-of-spectral-decompositions-with-wavelets.pdf)
 
     
 ### Code Example
